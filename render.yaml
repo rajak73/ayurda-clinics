@@ -1,0 +1,76 @@
+# =========================================================================
+# Render Blueprint Specification for Ayurda Clinics
+# =========================================================================
+services:
+
+  # -------------------------------------------------------------------------
+  # 1. Backend Web Service
+  # -------------------------------------------------------------------------
+  - type: web
+    name: ayurda-clinics-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5001
+      
+      # Database Connection Parameters (Railway will override these)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+        
+      # Security Token Secret
+      - key: JWT_SECRET
+        sync: false
+        
+      # SMTP Email Notifications config
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+        
+      # Twilio WhatsApp Notifications (Optional)
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        value: whatsapp:+14155238886
+        
+      # Clinic Profile & Origin settings
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: CLINIC_NAME
+        value: "Ayurda Clinics"
+      - key: CLINIC_PHONE
+        value: "+91-98765-43210"
+      - key: FRONTEND_URL
+        sync: false
+
+  # -------------------------------------------------------------------------
+  # 2. Frontend Static Site (Single Page App)
+  # -------------------------------------------------------------------------
+  - type: static
+    name: ayurda-clinics-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    routes:
+      # SPA Rewrite: Map all page requests to index.html to support React Router in production
+      - type: rewrite
+        source: /*
+        destination: /index.html
